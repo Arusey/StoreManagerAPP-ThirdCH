@@ -1,0 +1,20 @@
+from .BaseTest import *
+
+class TestProducts(TestAllEndpoints):
+    def test_post_products(self):
+        response = self.test_client.post("/api/v2/products",
+                                         data=json.dumps({
+                                            "name": "coffee",
+                                            "category": "junk",
+                                            "description": "super delicious",
+                                            "currentstock": 23,
+                                            "minimumstock": 2,
+                                            "price": 200
+                                         }),
+                                         headers={
+                                            'content-type': 'application/json',
+                                            'x-access-token': self.token_for_admin
+                                         })
+        message = json.loads(response.data)
+        self.assertEqual(message["Message"], "Product posted successfully")
+        self.assertEqual(response.status_code, 201)

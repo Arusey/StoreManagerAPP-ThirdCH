@@ -141,3 +141,39 @@ class AttLogin(Resource):
             return make_response(jsonify({
                             "Message": "Check your credentials",
                                 "Status": "Failed"}), 401)
+
+
+
+class Product(Resource):
+    @token_required
+    def post(current_user, self):
+        '''endpoint for posting a product'''
+        if current_user and current_user["role"] != "admin":
+            return make_response(jsonify({
+                "Message": "you must be an admin endpoint"}
+            ), 403)
+        data = request.get_json()
+        if not data:
+            return make_response(jsonify({
+                "Message": "Kindly ensure you have inserted your details"
+            }), 400)
+        ProductValidate.validate_missing_key(self, data)
+        ProductValidate.validate_empty_products(self, data)
+        ProductValidate.validate_products_data(self, data)
+
+
+        name = data["name"]
+        category = data["category"]
+        description = data["description"]
+        currentstock = data["currentstock"]
+        minimumstock = data["minimumstock"]
+        price = data["price"]
+
+        product = ModelProduct(data)
+        product.add_product()
+        return make_response(jsonify({
+            "Status": "ok",
+            "Message": "Product posted successfully",
+            "Products": product.get()
+        }
+        ), 201)
