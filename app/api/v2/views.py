@@ -93,3 +93,51 @@ class AttSignup(Resource):
             "message": "please login as administrator"
         }), 401)
         return message
+class AdminLogin(Resource):
+    '''docstring for administrator login'''
+    def post(self):
+        '''login as user and encode a jwt token'''
+        data = request.get_json()
+        email = data["email"]
+        password = data["password"]
+        users = UserModel.get(self)
+        for user in users:
+            if email == user["email"] and password == user['password']:
+
+
+                token = jwt.encode({
+                "email": email,
+                "password" : password,
+                "exp": datetime.datetime.utcnow() + datetime.timedelta
+                                                (minutes=50000)
+                }, Config.SECRET_KEY, algorithm='HS256')
+                return make_response(jsonify({
+                            "Message": "user successfully logged in",
+						     "token": token.decode("UTF-8")}), 200)
+            return make_response(jsonify({
+                "Message": "Login failed, wrong entries"
+            }
+            ), 403)
+class AttLogin(Resource):
+    '''docstring for attendant login'''
+    def post(self):
+        '''login as attendant and encode a jwt token'''
+        data = request.get_json()
+        email = data["email"]
+        password = data["password"]
+        users = UserModel.get(self)
+        for user in users:
+            if email == user["email"] and password == user["password"]:
+                print(user)
+                token = jwt.encode({
+                "email": email,
+                "password" : password,
+                "exp": datetime.datetime.utcnow() + datetime.timedelta
+                                                (minutes=54567)
+                }, Config.SECRET_KEY, algorithm='HS256')
+                return make_response(jsonify({
+                            "Message": "attendant successfully logged in",
+						     "token": token.decode("UTF-8")}), 200)
+            return make_response(jsonify({
+                            "Message": "Check your credentials",
+                                "Status": "Failed"}), 401)
