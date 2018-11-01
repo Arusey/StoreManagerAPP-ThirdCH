@@ -1,4 +1,6 @@
 # StoreManagerAPP-ThirdCH
+[![Maintainability](https://api.codeclimate.com/v1/badges/b4e9e82c81b8959c52cc/maintainability)](https://codeclimate.com/github/Arusey/StoreManagerAPP-ThirdCH/maintainability)
+
 This is application for managing sales in a given store
 
 App Description
@@ -6,7 +8,7 @@ App Description
 This is a store manager application that allows the stakeholders of a given store to perform actions such as:
 * Sign up to the application
 * Login to the application
-* Post a product 
+* Post a product
 * Post a Sale
 * Get all products
 * Get single product
@@ -54,18 +56,18 @@ The following endpoints should be working:
 |delete/api/v2/products/<int:id> | delete a product | product id, pass token
 |update/api/v2/products/<int:id> | update a product | product id, pass token
 
-  
+
  Technologies used include:
  ==========================
  * Python
- * Flask 
+ * Flask
  * Flask-Restful
  * Json Web Tokens
  * Heroku
  * Travis CI
  * Coveralls
  * Code Climate
-  
+
  Acknowldegments
  ===============
  I would like to acknowledge the Andela Bootcamp 33 for facilitating this project
