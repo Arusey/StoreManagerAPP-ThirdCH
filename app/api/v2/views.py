@@ -380,8 +380,6 @@ class Sale(Resource):
             }), 401)
 
 
-
-
 class SingleSale(Resource):
     @token_required
     def get(current_user, self, saleid):
