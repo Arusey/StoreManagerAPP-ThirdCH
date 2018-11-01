@@ -6,7 +6,7 @@ import jwt
 import datetime
 
 from .models.userModel import UserModel
-from .models.productsModel import ModelProduct
+from .models.productModel import ModelProduct
 from .models.salesModel import ModelSales
 from .utils import AuthValidate, ProductValidate
 
@@ -43,28 +43,28 @@ def token_required(func):
 
 
 
-# class AdminSignup(Resource):
-#     """docstring for AdminSignup."""
-#     def post(self):
-#         data = request.get_json()
-#         AuthValidate.validate_missing_key_value(self, data)
-#         AuthValidate.validate_data(self, data)
-#         AuthValidate.validate_invalid_entry(self,data)
-#         AuthValidate.validate_empty_data(self, data)
-#         AuthValidate.validate_details(self, data)
-#         name = data["name"]
-#         email = data["email"]
-#         password = data["password"]
-#         role = data["role"]
-#         user = UserModel(name, email, password, role)
-#         user.saveAdmin()
-#         message = make_response(jsonify({
-#         "Message": "user successfully registered",
-#         "name": name,
-#         "email": email,
-#         "role": role
-#         }), 201)
-#         return message
+class AdminSignup(Resource):
+    """docstring for AdminSignup."""
+    def post(self):
+        data = request.get_json()
+        AuthValidate.validate_missing_key_value(self, data)
+        AuthValidate.validate_data(self, data)
+        AuthValidate.validate_invalid_entry(self,data)
+        AuthValidate.validate_empty_data(self, data)
+        AuthValidate.validate_details(self, data)
+        name = data["name"]
+        email = data["email"]
+        password = data["password"]
+        role = data["role"]
+        user = UserModel(name, email, password, role)
+        user.saveAdmin()
+        message = make_response(jsonify({
+        "Message": "user successfully registered",
+        "name": name,
+        "email": email,
+        "role": role
+        }), 201)
+        return message
 class AttSignup(Resource):
     """docstring for attendant Signup."""
     @token_required
@@ -198,6 +198,42 @@ class Product(Resource):
         return make_response(jsonify({
             "Message": "Please login first"
         }), 401)
+        @token_required
+    def put(current_user, self, id):
+        '''update details in product'''
+        if current_user and current_user["role"] != "admin":
+            return make_response(jsonify({
+                "Message": "You have to be an admin"
+            }), 403)
+        data = request.get_json()
+        name = data["name"]
+
+        currentstock = data["currentstock"]
+
+        price = data["price"]
+
+        product = ModelProduct(data)
+        products = product.get()
+
+        if len(products) == 0:
+            return make_response(jsonify(
+            {
+                "Message": "No products have been posted yet"
+            }
+            ), 404)
+
+        for item in products:
+            if int(id) == int(item["id"]):
+                product.update(id)
+                return make_response(jsonify({
+                    "Message": "product has been updated successfully",
+                    "product": product.get()
+                }), 200)
+        return make_response(jsonify({
+            "Message": "The product does not exist"
+        }), 404)
+
+        
 class SingleProduct(Resource):
     '''docstring for getting a single sale'''
     @token_required
