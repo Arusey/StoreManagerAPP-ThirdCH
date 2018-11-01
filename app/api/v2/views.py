@@ -198,3 +198,24 @@ class Product(Resource):
         return make_response(jsonify({
             "Message": "Please login first"
         }), 401)
+class SingleProduct(Resource):
+    '''docstring for getting a single sale'''
+    @token_required
+    def get(current_user, self, id):
+        '''gets single product'''
+        product = ModelProduct()
+        products = product.get()
+        if len(products) == 0:
+            return make_response(jsonify({
+                "Message": "No products have been posted yet"
+            }), 404)
+        if current_user:
+            for product in products:
+                if int(id) == product["id"]:
+                    return make_response(jsonify({
+                    "Message": "Product retrieval successful",
+                    "product": product
+                    }), 200)
+        return make_response(jsonify({
+            "Message": "This product does not exist"
+        }), 404)

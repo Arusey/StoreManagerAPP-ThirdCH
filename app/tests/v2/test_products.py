@@ -29,3 +29,14 @@ class TestProducts(TestAllEndpoints):
 
         self.assertEqual(message["Message"], "All products fetched successfully")
         self.assertEqual(response.status_code, 200)
+
+    def test_get_single_products(self):
+        response = self.test_client.get("/api/v2/products/1",
+                                         data=self.product,
+                                         headers={
+                                            'content-type': 'application/json',
+                                            'x-access-token': self.token_for_admin
+                                         })
+        message = json.loads(response.data)
+        self.assertEqual(message["Message"], "Product retrieval successful")
+        self.assertEqual(response.status_code, 200)
