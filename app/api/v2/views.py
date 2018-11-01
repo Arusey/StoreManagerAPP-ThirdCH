@@ -199,6 +199,7 @@ class Product(Resource):
             "Message": "Please login first"
         }), 401)
 class SingleProduct(Resource):
+    '''docstring for getting a single sale'''
     @token_required
     def get(current_user, self, id):
         '''gets single product'''
