@@ -334,3 +334,21 @@ class Sale(Resource):
                 "Message": "viewing sales is reserved for the admin",
 
             }), 401)
+
+class SingleSale(Resource):
+    @token_required
+    def get(current_user, self, saleid):
+        if current_user:
+            saleitem = ModelSales()
+            sales = saleitem.get_all_sales()
+            if not sales:
+                return make_response(jsonify({
+                            "Message": "No available sales"
+                        }), 404)
+            for singlesale in sales:
+                if int(saleid)  == int(singlesale["saleid"]):
+                    print(saleid)
+                    return make_response(jsonify({
+                        "Message": "Sale  retrieval is successful",
+                        "sale": singlesale
+                    }), 200)

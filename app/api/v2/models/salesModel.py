@@ -48,5 +48,5 @@ class ModelSales(Db):
             sale['attendantname'] = single_item[7]
             sales.append(sale)
 
-        # print(result)
+
         return sales
