@@ -6,7 +6,8 @@ import jwt
 import datetime
 
 from .models.userModel import UserModel
-from .models.productModel import ModelProduct
+from .models.databaseModel import Db
+from .models.productsModel import ModelProduct
 from .models.salesModel import ModelSales
 from .utils import AuthValidate, ProductValidate
 
@@ -19,6 +20,17 @@ def token_required(func):
         current_user = None
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
+            db = Db()
+            conn = db.create_connection()
+            db.create_tables()
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT * FROM badtokens WHERE token = %s", (token,)
+            )
+            if cursor.fetchone():
+                return make_response(jsonify({
+                    "Message": "Token has been invalidated, kindly login"
+                }), 403)
         if not token:
             return make_response(jsonify({
                                  "Message": "the access token is missing, Login"}, 401))
@@ -47,15 +59,16 @@ class AdminSignup(Resource):
     """docstring for AdminSignup."""
     def post(self):
         data = request.get_json()
-        AuthValidate.validate_missing_key_value(self, data)
+        AuthValidate.validate_missing_key_value(self
+        , data)
         AuthValidate.validate_data(self, data)
         AuthValidate.validate_invalid_entry(self,data)
         AuthValidate.validate_empty_data(self, data)
         AuthValidate.validate_details(self, data)
-        name = data["name"]
-        email = data["email"]
+        name = data["name"].lower()
+        email = data["email"].lower()
         password = data["password"]
-        role = data["role"]
+        role = data["role"].lower()
         user = UserModel(name, email, password, role)
         user.saveAdmin()
         message = make_response(jsonify({
@@ -76,10 +89,10 @@ class AttSignup(Resource):
             AuthValidate.validate_invalid_entry(self,data)
             AuthValidate.validate_empty_data(self, data)
             AuthValidate.validate_details(self, data)
-            name = data["name"]
-            email = data["email"]
+            name = data["name"].lower()
+            email = data["email"].lower()
             password = data["password"]
-            role = data["role"]
+            role = data["role"].lower()
             attendant = UserModel(name, email, password, role)
             attendant.saveAdmin()
             message = make_response(jsonify({
@@ -98,8 +111,8 @@ class AdminLogin(Resource):
     def post(self):
         '''login as user and encode a jwt token'''
         data = request.get_json()
-        email = data["email"]
-        password = data["password"]
+        email = data["email"].lower()
+        password = data["password"].lower()
         users = UserModel.get(self)
         for user in users:
             if email == user["email"] and password == user['password']:
@@ -123,8 +136,8 @@ class AttLogin(Resource):
     def post(self):
         '''login as attendant and encode a jwt token'''
         data = request.get_json()
-        email = data["email"]
-        password = data["password"]
+        email = data["email"].lower()
+        password = data["password"].lower()
         users = UserModel.get(self)
         for user in users:
             if email == user["email"] and password == user["password"]:
@@ -138,9 +151,14 @@ class AttLogin(Resource):
                 return make_response(jsonify({
                             "Message": "attendant successfully logged in",
 						     "token": token.decode("UTF-8")}), 200)
-            return make_response(jsonify({
-                            "Message": "Check your credentials",
-                                "Status": "Failed"}), 401)
+            # return make_response(jsonify({
+            #     "Message": "Login failed, wrong entries"
+            # }
+            # ), 403)
+
+
+
+
 
 
 
@@ -162,9 +180,9 @@ class Product(Resource):
         ProductValidate.validate_products_data(self, data)
 
 
-        name = data["name"]
-        category = data["category"]
-        description = data["description"]
+        name = data["name"].lower()
+        category = data["category"].lower()
+        description = data["description"].lower()
         currentstock = data["currentstock"]
         minimumstock = data["minimumstock"]
         price = data["price"]
@@ -198,7 +216,54 @@ class Product(Resource):
         return make_response(jsonify({
             "Message": "Please login first"
         }), 401)
-        @token_required
+class SingleProduct(Resource):
+    @token_required
+    def get(current_user, self, id):
+        '''gets single product'''
+        product = ModelProduct()
+        products = product.get()
+        if len(products) == 0:
+            return make_response(jsonify({
+                "Message": "No products have been posted yet"
+            }), 404)
+        if current_user:
+            for product in products:
+                if int(id) == product["id"]:
+                    return make_response(jsonify({
+                    "Message": "Product retrieval successful",
+                    "product": product
+                    }), 200)
+        return make_response(jsonify({
+            "Message": "This product does not exist"
+        }), 404)
+    @token_required
+    def delete(current_user, self, id):
+        '''deletes a selected product'''
+        product = ModelProduct()
+        products = product.get()
+        sales = ModelSales.get_all_sales(self)
+        if current_user["role"] != "admin":
+            return make_response(jsonify({
+                "Message": "You have no authorization to delete a product"
+            }), 403)
+        for item in products:
+            if item["id"] in sales:
+                return make_response(jsonify({
+                    "Message": "Product in sales, You cannot delete"
+                }), 403)
+            if id == item["id"]:
+                product.delete(id)
+                message = make_response(jsonify({
+                    "message": "Deleted successfully"
+                }), 200)
+                return message
+        message = make_response(jsonify({
+            "Message": "The product selected for deletion does not exist"
+        }))
+
+        return message
+
+    @token_required
     def put(current_user, self, id):
         '''update details in product'''
         if current_user and current_user["role"] != "admin":
@@ -232,30 +297,6 @@ class Product(Resource):
         return make_response(jsonify({
             "Message": "The product does not exist"
         }), 404)
-
-
-class SingleProduct(Resource):
-    '''docstring for getting a single sale'''
-    @token_required
-    def get(current_user, self, id):
-        '''gets single product'''
-        product = ModelProduct()
-        products = product.get()
-        if len(products) == 0:
-            return make_response(jsonify({
-                "Message": "No products have been posted yet"
-            }), 404)
-        if current_user:
-            for product in products:
-                if int(id) == product["id"]:
-                    return make_response(jsonify({
-                    "Message": "Product retrieval successful",
-                    "product": product
-                    }), 200)
-        return make_response(jsonify({
-            "Message": "This product does not exist"
-        }), 404)
-
 class Sale(Resource):
     @token_required
     def post(current_user, self):
@@ -313,6 +354,9 @@ class Sale(Resource):
                             "sales": product,
                             "total": total
                         }), 201)
+
+
+
     @token_required
     def get(current_user, self):
         '''getting all sales made'''
@@ -334,3 +378,43 @@ class Sale(Resource):
                 "Message": "viewing sales is reserved for the admin",
 
             }), 401)
+
+
+
+
+class SingleSale(Resource):
+    @token_required
+    def get(current_user, self, saleid):
+        if current_user:
+            saleitem = ModelSales()
+            sales = saleitem.get_all_sales()
+            if not sales:
+                return make_response(jsonify({
+                            "Message": "No available sales"
+                        }), 404)
+            for singlesale in sales:
+                if int(saleid)  == int(singlesale["saleid"]):
+                    print(saleid)
+                    return make_response(jsonify({
+                        "Message": "Sale  retrieval is successful",
+                        "sale": singlesale
+                    }), 200)
+
+
+class Logout(Resource):
+    @token_required
+    def post(current_user, self):
+        try:
+            if current_user:
+                if 'x-access-token' in request.headers:
+                    token = request.headers["x-access-token"]
+                    thisuser = UserModel()
+                    date = datetime.datetime.now()
+                    thisuser.user_logout(token, date)
+                    return make_response(jsonify({
+                        "Message": "Log out, see you later"
+                    }), 200)
+        except Exception as e:
+            return make_response(jsonify({
+                "Message": "Failed to blacklist token"
+            }), 403)

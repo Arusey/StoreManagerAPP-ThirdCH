@@ -280,3 +280,7 @@ class TestMyUsers(TestAllEndpoints):
         print(response.data)
         self.assertEqual(message["Message"], "Login failed, wrong entries")
         self.assertEqual(response.status_code, 403)
+
+
+    def test_logout_user(self):
+        pass
