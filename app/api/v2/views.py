@@ -313,5 +313,24 @@ class Sale(Resource):
                             "sales": product,
                             "total": total
                         }), 201)
+    @token_required
+    def get(current_user, self):
+        '''getting all sales made'''
+        if current_user and current_user["role"] == "admin":
+            saleitem = ModelSales()
+            sales = saleitem.get_all_sales()
 
-    
+            if sales:
+                return make_response(jsonify({
+                    "Message": "sale retrieval is successful",
+                    "sales": sales
+                }), 200)
+            else:
+                return make_response(jsonify({
+                    "Message": "unfortunately no sale has been made"
+                }), 404)
+        else:
+            return make_response(jsonify({
+                "Message": "viewing sales is reserved for the admin",
+
+            }), 401)
