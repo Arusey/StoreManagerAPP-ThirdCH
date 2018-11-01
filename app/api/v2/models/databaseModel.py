@@ -16,13 +16,11 @@ class Db(object):
     def create_connection(self):
         try:
             if Config.APP_SETTINGS == "testing":
-                self.conn = psycopg2.connect(database='test_database')
+                db = 'test_database'
             if Config.APP_SETTINGS == 'development':
-                self.conn = psycopg2.connect(
-                    database=self.dbName,
-                    host=self.dbHost,
-                    password=self.dbPassword
-                )
+                db = self.dbName
+            self.conn = psycopg2.connect(database=db)
+
             return self.conn
         except Exception as e:
             print(e)
@@ -46,7 +44,7 @@ class Db(object):
             name varchar(15) NOT NULL,
             category varchar(20) NOT NULL,
             description varchar(80) NOT NULL,
-            currentstock int NOT NULL UNIQUE,
+            currentstock int NOT NULL,
             minimumstock int NOT NULL,
             price float(40) NOT NULL
             )""",
@@ -57,6 +55,11 @@ class Db(object):
             productid int REFERENCES products(id) ON DELETE RESTRICT
 
 
+            )""",
+            """CREATE TABLE IF NOT EXISTS badtokens(
+                id serial PRIMARY KEY,
+                token varchar(255) NOT NULL,
+                date varchar(255) NOT NULL
             )"""
                ]
 
@@ -77,12 +80,12 @@ class Db(object):
 
     def collapse_tables(self):
         cursor = self.create_connection().cursor()
-        mysql = [
-        "DROP TABLE IF EXISTS users CASCADE",
-        "DROP TABLE IF EXISTS products CASCADE",
-        "DROP TABLE IF EXISTS sales CASCADE"
-        ]
-        for string in mysql:
-            cursor.execute(string)
+        cursor.execute(
+             "SELECT table_schema,table_name FROM information_schema.tables "
+            " WHERE table_schema = 'public' ORDER BY table_schema,table_name"
+        )
+        rows = cursor.fetchall()
+        for row in rows:
+            cursor.execute("drop table "+row[1] + " cascade")
         self.conn.commit()
         self.conn.close()
