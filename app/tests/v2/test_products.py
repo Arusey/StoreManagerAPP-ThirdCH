@@ -40,3 +40,25 @@ class TestProducts(TestAllEndpoints):
         message = json.loads(response.data)
         self.assertEqual(message["Message"], "Product retrieval successful")
         self.assertEqual(response.status_code, 200)
+
+    def test_delete_product(self):
+        response = self.test_client.delete("/api/v2/products/1",
+                                         data=self.product,
+                                         headers={
+                                            'content-type': 'application/json',
+                                            'x-access-token': self.token_for_admin
+                                         })
+        message = json.loads(response.data)
+        self.assertEqual(message["Message"], "Product in sales, You cannot delete")
+        self.assertEqual(response.status_code, 403)
+
+    def test_delete_product_in_sales(self):
+        response = self.test_client.delete("/api/v2/products/6",
+                                            data=self.product,
+                                            headers={
+                                                'content-type': 'application/json',
+                                                'x-access-token': self.token_for_admin
+                                            })
+        message = json.loads(response.data)
+        self.assertEqual(message["Message"], "Product in sales, You cannot delete")
+        self.assertEqual(response.status_code, 403)

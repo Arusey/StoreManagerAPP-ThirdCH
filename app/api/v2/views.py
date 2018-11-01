@@ -6,7 +6,7 @@ import jwt
 import datetime
 
 from .models.userModel import UserModel
-from .models.productModel import ModelProduct
+from .models.productsModel import ModelProduct
 from .models.salesModel import ModelSales
 from .utils import AuthValidate, ProductValidate
 
@@ -43,28 +43,28 @@ def token_required(func):
 
 
 
-class AdminSignup(Resource):
-    """docstring for AdminSignup."""
-    def post(self):
-        data = request.get_json()
-        AuthValidate.validate_missing_key_value(self, data)
-        AuthValidate.validate_data(self, data)
-        AuthValidate.validate_invalid_entry(self,data)
-        AuthValidate.validate_empty_data(self, data)
-        AuthValidate.validate_details(self, data)
-        name = data["name"]
-        email = data["email"]
-        password = data["password"]
-        role = data["role"]
-        user = UserModel(name, email, password, role)
-        user.saveAdmin()
-        message = make_response(jsonify({
-        "Message": "user successfully registered",
-        "name": name,
-        "email": email,
-        "role": role
-        }), 201)
-        return message
+# class AdminSignup(Resource):
+#     """docstring for AdminSignup."""
+#     def post(self):
+#         data = request.get_json()
+#         AuthValidate.validate_missing_key_value(self, data)
+#         AuthValidate.validate_data(self, data)
+#         AuthValidate.validate_invalid_entry(self,data)
+#         AuthValidate.validate_empty_data(self, data)
+#         AuthValidate.validate_details(self, data)
+#         name = data["name"]
+#         email = data["email"]
+#         password = data["password"]
+#         role = data["role"]
+#         user = UserModel(name, email, password, role)
+#         user.saveAdmin()
+#         message = make_response(jsonify({
+#         "Message": "user successfully registered",
+#         "name": name,
+#         "email": email,
+#         "role": role
+#         }), 201)
+#         return message
 class AttSignup(Resource):
     """docstring for attendant Signup."""
     @token_required
