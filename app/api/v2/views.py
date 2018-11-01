@@ -233,7 +233,7 @@ class Product(Resource):
             "Message": "The product does not exist"
         }), 404)
 
-        
+
 class SingleProduct(Resource):
     '''docstring for getting a single sale'''
     @token_required
@@ -255,3 +255,61 @@ class SingleProduct(Resource):
         return make_response(jsonify({
             "Message": "This product does not exist"
         }), 404)
+
+class Sale(Resource):
+    @token_required
+    def post(current_user, self):
+        total = 0
+        data = request.get_json()
+        if not data or not data["id"]:
+            return make_response(jsonify({
+
+                "Message": "no data available"
+            }), 406)
+
+        id = data["id"]
+        if current_user and current_user['role'] == 'attendant':
+            self.myproduct = ModelProduct.get(self)
+            if len(self.myproduct) == 0:
+
+                return make_response(jsonify({
+                    "Message": "No products available for sale"
+                }), 404)
+
+            for product in self.myproduct:
+                print(product)
+                print(id)
+                if product["id"] == id:
+                    userid = current_user["id"]
+                    mysale = ModelSales(userid, id)
+                    # currentstock = data["currentstock"]
+                    if int(product["currentstock"]) > 0:
+                        product["currentstock"] = product["currentstock"] - 1
+                    else:
+                        return make_response(jsonify({
+                            "Message": "sold out"
+                        }), 404)
+
+
+                    mysale.save(userid, id)
+
+                    productID = id
+                    update_product = ModelProduct(product)
+                    update_product.update(productID)
+                    new_sale = ModelSales.get_all_sales(self)
+                    for sale in new_sale:
+                        if product["id"] == new_sale:
+                            price = int(product["price"]) * data["currentstock"]
+                            total = total + price
+                    if product["currentstock"] < int(product["minimumstock"]):
+                        return make_response(jsonify({
+                            "Message": "Alert Minimum stock reached",
+                            "sales": product,
+                            "total": total
+                        }), 201)
+                    else:
+                        return make_response(jsonify({
+                            "Message": "product successfully sold",
+                            "sales": product,
+                            "total": total
+                        }), 201)
