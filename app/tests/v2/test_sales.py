@@ -1,6 +1,7 @@
 from .BaseTest import *
 
 class TestSales(TestAllEndpoints):
+    """test whether whther all sales are retrieved successfully"""
     def test_sale_success(self):
         response = self.test_client.post("/api/v2/sales",
                                          data=self.sale,
@@ -13,6 +14,7 @@ class TestSales(TestAllEndpoints):
         self.assertEqual(response.status_code, 201)
 
     def test_empty_sale_data(self):
+        """test whether empty data is inserted in sales endpoint"""
         response = self.test_client.post("/api/v2/sales",
                                          data=json.dumps({
 
@@ -26,6 +28,7 @@ class TestSales(TestAllEndpoints):
         self.assertEqual(response.status_code, 406)
 
     def test_get_all_sales(self):
+        """test whether all sales have been retrieved"""
         response = self.test_client.get("/api/v2/sales",
                                          data=self.sale,
                                          headers={

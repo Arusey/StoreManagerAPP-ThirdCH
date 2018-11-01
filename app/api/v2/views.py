@@ -313,3 +313,5 @@ class Sale(Resource):
                             "sales": product,
                             "total": total
                         }), 201)
+
+    
