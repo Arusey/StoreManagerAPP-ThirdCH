@@ -10,23 +10,7 @@ class AuthValidate(object):
     def __init__(self, data):
         self.data = data
     """docstring for AuthValidate."""
-    def validate_missing_key_value(self, data):
-        if "name" not in data:
-            Response = "Key name is missing"
-            abort(400, Response)
-        if "email" not in data:
-            Response = "Key email is missing"
-            abort(400, Response)
-        if "password" not in data:
-            Response = "Key password is missing"
-            abort(400, Response)
-        if "role" not in data:
-            Response = "Key role is missing"
-            abort(400, Response)
-    def validate_data(self, data):
-        if type(data["name"]) is not str or type(data["email"]) is not str or type(data["password"]) is not str or type(data["role"]) is not str:
-            Response = "You cannot insert an integer"
-            abort(400, Response)
+
 
     def validate_invalid_entry(self, data):
 
@@ -47,10 +31,10 @@ class AuthValidate(object):
         if data["name"] =="" or data["email"] =="" or data["password"] =="" or data["role"] =="":
             Response ="Missing credentials, check again"
             abort(400, Response)
-    def validate_data(self, data):
-        if type(data["name"]) is not str or type(data["email"]) is not str or type(data["password"]) is not str or type(data["role"]) is not str:
-            Response = "You cannot insert an integer"
-            abort(400, Response)
+    # def validate_data(self, data):
+    #     if type(data["name"]) is not str or type(data["email"]) is not str or type(data["password"]) is not str or type(data["role"]) is not str:
+    #         Response = "You cannot insert an integer"
+    #         abort(400, Response)
     def validate_details(self, data):
         valid_mail = validate_email(data["email"])
         users = UserModel.get(self)

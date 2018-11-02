@@ -48,8 +48,9 @@ class TestProducts(TestAllEndpoints):
                                             'x-access-token': self.token_for_admin
                                          })
         message = json.loads(response.data)
-        self.assertEqual(message["Message"], "Product in sales, You cannot delete")
-        self.assertEqual(response.status_code, 403)
+        print(response.data)
+        self.assertEqual(message["message"], "Deleted successfully")
+        self.assertEqual(response.status_code, 200)
 
     def test_delete_product_in_sales(self):
         response = self.test_client.delete("/api/v2/products/6",
@@ -59,18 +60,15 @@ class TestProducts(TestAllEndpoints):
                                                 'x-access-token': self.token_for_admin
                                             })
         message = json.loads(response.data)
-        self.assertEqual(message["Message"], "Product in sales, You cannot delete")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(message["Message"], "The product selected for deletion does not exist")
+        self.assertEqual(response.status_code, 200)
 
     def test_update_product(self):
         response = self.test_client.put("/api/v2/products/1",
                                          data=json.dumps(
                                             {
                                                "name": "burger",
-                                               "category": "junk",
-                                               "description": "super delicious",
                                                "currentstock": 23,
-                                               "minimumstock": 2,
                                                "price": 200
                                             }
                                          ),
@@ -79,6 +77,7 @@ class TestProducts(TestAllEndpoints):
                                             'x-access-token': self.token_for_admin
                                          })
         message = json.loads(response.data)
+        print(response.data)
         self.assertEqual(message["Message"], "product has been updated successfully")
         self.assertEqual(response.status_code, 200)
     def test_empty_products(self):
@@ -96,7 +95,7 @@ class TestProducts(TestAllEndpoints):
                                              'x-access-token': self.token_for_admin
                                          })
         message = json.loads(response.data)
-        self.assertEqual(message["message"], "You have to insert a product stored")
+        self.assertEqual(message["message"], "u'' is not of type 'number'")
         self.assertEqual(response.status_code, 400)
 
     def test_missing_key(self):
@@ -114,7 +113,7 @@ class TestProducts(TestAllEndpoints):
                                              'x-access-token': self.token_for_admin
                                          })
         message = json.loads(response.data)
-        self.assertEqual(message["message"], "Must enter all product details")
+        self.assertEqual(message["message"], "'name' is a required property")
         self.assertEqual(response.status_code, 400)
 
     def test_product_registered(self):

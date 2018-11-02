@@ -75,19 +75,20 @@ class TestAllEndpoints(unittest.TestCase):
             "minimumstock": 0,
             "price": 200
         })
-        self.sale = json.dumps ({
-            "id": 1
-        })
+        # self.sale = json.dumps ({
+        #     "id": 1,
+        #     "currentstock": 5
+        # })
         self.test_client.post("/api/v2/products", data=self.product,
                                 headers={
                                     'content-type': 'application/json',
                                     'x-access-token': self.token_for_admin
                                 })
-        self.test_client.post("/api/v2/sales", data=self.sale,
-                                headers={
-                                'content-type': 'application/json',
-                                'x-access-token': self.token_for_attendant
-                                })
+        # self.test_client.post("/api/v2/sales", data=self.sale,
+        #                         headers={
+        #                         'content-type': 'application/json',
+        #                         'x-access-token': self.token_for_attendant
+        #                         })
         self.context = self.app.app_context()
         self.context.push()
 
