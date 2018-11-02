@@ -1,7 +1,7 @@
 # StoreManagerAPP-ThirdCH
-This is application for managing sales in a given store
-[![Maintainability](https://api.codeclimate.com/v1/badges/b4e9e82c81b8959c52cc/maintainability)](https://codeclimate.com/github/Arusey/StoreManagerAPP-ThirdCH/maintainability)
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/b4e9e82c81b8959c52cc/maintainability)](https://codeclimate.com/github/Arusey/StoreManagerAPP-ThirdCH/maintainability)
+This is application for managing sales in a given store
 App Description
 ===============
 This is a store manager application that allows the stakeholders of a given store to perform actions such as:
