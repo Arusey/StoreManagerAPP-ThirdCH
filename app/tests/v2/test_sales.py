@@ -10,7 +10,7 @@ class TestSales(TestAllEndpoints):
                                              'x-access-token': self.token_for_attendant
                                          })
         message = json.loads(response.data)
-        self.assertEqual(message["Message"], "product successfully sold")
+        self.assertEqual(message["message"], "product successfully sold")
         self.assertEqual(response.status_code, 201)
 
     def test_empty_sale_data(self):
@@ -24,7 +24,7 @@ class TestSales(TestAllEndpoints):
                                              'x-access-token': self.token_for_attendant
                                          })
         message = json.loads(response.data)
-        self.assertEqual(message["Message"], "no data available")
+        self.assertEqual(message["message"], "no data available")
         self.assertEqual(response.status_code, 406)
 
     def test_get_all_sales(self):

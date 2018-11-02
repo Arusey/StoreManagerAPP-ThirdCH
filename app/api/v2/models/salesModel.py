@@ -15,6 +15,7 @@ class ModelSales(Db):
 
     def save(self, userid, id):
         '''record a sale'''
+        print(userid, "\n\n\n\n\n\n")
         self.db.create_tables()
         cursor = self.conn.cursor()
         try:

@@ -23,10 +23,10 @@ class AuthValidate(object):
         if "role" not in data:
             Response = "Key role is missing"
             abort(400, Response)
-    def validate_data(self, data):
-        if type(data["name"]) is not str or type(data["email"]) is not str or type(data["password"]) is not str or type(data["role"]) is not str:
-            Response = "You cannot insert an integer"
-            abort(400, Response)
+    # def validate_data(self, data):
+    #     if type(data["name"]) is not str or type(data["email"]) is not str or type(data["password"]) is not str or type(data["role"]) is not str:
+    #         Response = "You cannot insert an integer"
+    #         abort(400, Response)
 
     def validate_invalid_entry(self, data):
 
@@ -47,13 +47,14 @@ class AuthValidate(object):
         if data["name"] =="" or data["email"] =="" or data["password"] =="" or data["role"] =="":
             Response ="Missing credentials, check again"
             abort(400, Response)
-    def validate_data(self, data):
-        if type(data["name"]) is not str or type(data["email"]) is not str or type(data["password"]) is not str or type(data["role"]) is not str:
-            Response = "You cannot insert an integer"
-            abort(400, Response)
+    # def validate_data(self, data):
+    #     if type(data["name"]) is not str or type(data["email"]) is not str or type(data["password"]) is not str or type(data["role"]) is not str:
+    #         Response = "You cannot insert an integer"
+    #         abort(400, Response)
     def validate_details(self, data):
         valid_mail = validate_email(data["email"])
-        users = UserModel.get(self)
+        userq = UserModel()
+        users = userq.get()
         for user in users:
             if data["email"] == user["email"]:
                 Response = "User already exists"
@@ -114,24 +115,23 @@ class ProductValidate(object):
         self.data = data
 
 
-    def validate_empty_products(self, data):
-        print(data)
-        if data["name"] == "" or data["category"] == "" or data["description"] == "" or data["currentstock"] == "" or data["minimumstock"] == "" or data["price"] == "":
+    def validate_empty_products(self):
+        if self.data["name"] == "" or self.data["category"] == "" or self.data["description"] == "" or self.data["currentstock"] == "" or self.data["minimumstock"] == "" or self.data["price"] == "":
             Response = "You have to insert a product stored"
             abort(400, Response)
-    def validate_missing_key(self, data):
+    def validate_missing_key(self):
         '''Checks for missing data keys in data passed during product registration'''
-        if "name" not in data or "category" not in data or "description" not in data or "currentstock" not in data or "minimumstock" not in data or "price" not in data:
+        if "name" not in self.data or "category" not in self.data or "description" not in self.data or "currentstock" not in self.data or "minimumstock" not in self.data or "price" not in self.data:
             Response = "Must enter all product details"
             abort(400, Response)
-    def validate_products_data(self, data):
-        myproduct = ModelProduct(data)
+    def validate_products_data(self):
+        myproduct = ModelProduct(self.data)
         products = myproduct.get()
         for product in products:
-            if data["name"] == product["name"]:
+            if self.data["name"] == product["name"]:
                 Response = "Product already registered"
                 abort(406, Response)
-        if " " in data["name"] or " " in data["category"]:
+        if " " in self.data["name"] or " " in self.data["category"]:
             Response = "Ensure no spaces when entering detail"
             abort(400, Response)
 
