@@ -10,19 +10,19 @@ class AuthValidate(object):
     def __init__(self, data):
         self.data = data
     """docstring for AuthValidate."""
-    def validate_missing_key_value(self, data):
-        if "name" not in data:
-            Response = "Key name is missing"
-            abort(400, Response)
-        if "email" not in data:
-            Response = "Key email is missing"
-            abort(400, Response)
-        if "password" not in data:
-            Response = "Key password is missing"
-            abort(400, Response)
-        if "role" not in data:
-            Response = "Key role is missing"
-            abort(400, Response)
+    # def validate_missing_key_value(self, data):
+    #     if "name" not in data:
+    #         Response = "Key name is missing"
+    #         abort(400, Response)
+    #     if "email" not in data:
+    #         Response = "Key email is missing"
+    #         abort(400, Response)
+    #     if "password" not in data:
+    #         Response = "Key password is missing"
+    #         abort(400, Response)
+    #     if "role" not in data:
+    #         Response = "Key role is missing"
+    #         abort(400, Response)
     # def validate_data(self, data):
     #     if type(data["name"]) is not str or type(data["email"]) is not str or type(data["password"]) is not str or type(data["role"]) is not str:
     #         Response = "You cannot insert an integer"
@@ -84,25 +84,25 @@ class AuthValidate(object):
 
 
 
-    def validate_datatypes(self, data):
-        if type(self.data["name"]) is not str:
-            Response = "Only string characters allowed for name"
-            abort(400, Response)
-        if type(self.data["email"]) is not str:
-            Response = "Only string characters are allowed for email"
-            abort(400, Response)
-        if type(self.data["password"]) is not str:
-            Response = "Only string characters are allowed for password"
-            abort(400, Response)
-        if type(self.data["role"]) is not str:
-            Response = "Only string characters are allowed for role"
-            abort(400, Response)
+    # def validate_datatypes(self, data):
+    #     if type(self.data["name"]) is not str:
+    #         Response = "Only string characters allowed for name"
+    #         abort(400, Response)
+    #     if type(self.data["email"]) is not str:
+    #         Response = "Only string characters are allowed for email"
+    #         abort(400, Response)
+    #     if type(self.data["password"]) is not str:
+    #         Response = "Only string characters are allowed for password"
+    #         abort(400, Response)
+    #     if type(self.data["role"]) is not str:
+    #         Response = "Only string characters are allowed for role"
+    #         abort(400, Response)
 
-    def validate_missing_key(self, data):
-        '''Checks for missing data keys in data passed during product registration'''
-        if "name" not in data or "category" not in data or "description" not in data or "currentstock" not in data or "minimumstock" not in data or "price" not in data:
-            Response = "Must enter all product details"
-            abort(400, Response)
+    # def validate_missing_key(self, data):
+    #     '''Checks for missing data keys in data passed during product registration'''
+    #     if "name" not in data or "category" not in data or "description" not in data or "currentstock" not in data or "minimumstock" not in data or "price" not in data:
+    #         Response = "Must enter all product details"
+    #         abort(400, Response)
 
 
 
@@ -119,11 +119,11 @@ class ProductValidate(object):
         if self.data["name"] == "" or self.data["category"] == "" or self.data["description"] == "" or self.data["currentstock"] == "" or self.data["minimumstock"] == "" or self.data["price"] == "":
             Response = "You have to insert a product stored"
             abort(400, Response)
-    def validate_missing_key(self):
-        '''Checks for missing data keys in data passed during product registration'''
-        if "name" not in self.data or "category" not in self.data or "description" not in self.data or "currentstock" not in self.data or "minimumstock" not in self.data or "price" not in self.data:
-            Response = "Must enter all product details"
-            abort(400, Response)
+    # def validate_missing_key(self):
+    #     '''Checks for missing data keys in data passed during product registration'''
+    #     if "name" not in self.data or "category" not in self.data or "description" not in self.data or "currentstock" not in self.data or "minimumstock" not in self.data or "price" not in self.data:
+    #         Response = "Must enter all product details"
+    #         abort(400, Response)
     def validate_products_data(self):
         myproduct = ModelProduct(self.data)
         products = myproduct.get()

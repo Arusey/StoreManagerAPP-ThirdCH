@@ -65,7 +65,6 @@ class AttSignup(Resource):
 
         data = request.get_json()
         valid = AuthValidate(data)
-        # valid.validate_missing_key_value(self)
         valid.validate_invalid_entry(data)
         valid.validate_empty_data(data)
         valid.validate_details(data)
@@ -168,7 +167,6 @@ class Product(Resource):
                 "Message": "Kindly ensure you have inserted your details"
             }), 400)
         pvalid = ProductValidate(data=data)
-        pvalid.validate_missing_key()
         pvalid.validate_empty_products()
         pvalid.validate_products_data()
 
@@ -294,7 +292,6 @@ class SingleProduct(Resource):
         }), 404)
 class Sale(Resource):
     @token_required
-    @expects_json(sales_json)
     def post(current_user, self):
         total = 0
         data = request.get_json()
@@ -304,60 +301,54 @@ class Sale(Resource):
                 "Message": "no data available"
             }), 406)
 
-        thisproduct = ModelProduct()
-        products = thisproduct.get()
         id = data["id"]
         if current_user and current_user['role'] == 'attendant':
-            if len(products) == 0:
+            self.myproduct = ModelProduct.get(self)
+            if len(self.myproduct) == 0:
+
                 return make_response(jsonify({
                     "Message": "No products available for sale"
                 }), 404)
 
-                
-
-        for product in products:
-            print(product)
-            print(id, product["id"])
-            if int(product["id"]) != int(id):
-                return make_response(jsonify({
-                    "Message": "Product does not exist"
-                }), 404)
-            print(product)
-            # print(id)
-            userid = current_user["id"]
-            mysale = ModelSales(userid, id)
-            currentstock = data["currentstock"]
-            if int(product["currentstock"]) > 0:
-                product["currentstock"] = product["currentstock"] - currentstock
-            else:
-                return make_response(jsonify({
-                    "Message": "sold out"
-                }), 404)
+            for product in self.myproduct:
+                print(product)
+                print(id)
+                if product["id"] == id:
+                    userid = current_user["id"]
+                    mysale = ModelSales(userid, id)
+                    if int(product["currentstock"]) > 0:
+                        product["currentstock"] = product["currentstock"] - data["currentstock"]
+                    else:
+                        return make_response(jsonify({
+                            "Message": "sold out"
+                        }), 404)
 
 
-            mysale.save(userid, id)
+                    mysale.save(userid, id)
 
-            productID = id
-            update_product = ModelProduct(product)
-            update_product.update(productID)
-            new_sale = ModelSales()
-            sales = new_sale.get_all_sales()
-            for sale in sales:
-                if product["id"] == new_sale:
-                    price = int(product["price"]) * data["currentstock"]
-                    total = total + price
-            if product["currentstock"] < int(product["minimumstock"]):
-                return make_response(jsonify({
-                    "Message": "Alert Minimum stock reached",
-                    "sales": product,
-                    "total": total
-                }), 201)
-            else:
-                return make_response(jsonify({
-                    "Message": "product successfully sold",
-                    "sales": product,
-                    "total": total
-                }), 201)
+                    productID = id
+                    update_product = ModelProduct(product)
+                    update_product.update(productID)
+                    new_sale = ModelSales.get_all_sales(self)
+                    for sale in new_sale:
+                        if product["id"] == new_sale:
+                            price = int(product["price"]) * data["currentstock"]
+                            total = total + price
+                    if product["currentstock"] < int(product["minimumstock"]):
+                        return make_response(jsonify({
+                            "Message": "Alert Minimum stock reached",
+                            "sales": product,
+                            "total": total
+                        }), 201)
+                    else:
+                        return make_response(jsonify({
+                            "Message": "product successfully sold",
+                            "sales": product,
+                            "total": total
+                        }), 201)
+            return make_response(jsonify({
+                "Message": "this product does not exist"
+            }), 404)
 
 
 

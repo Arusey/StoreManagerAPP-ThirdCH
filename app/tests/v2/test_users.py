@@ -47,21 +47,7 @@ class TestMyUsers(TestAllEndpoints):
         self.assertEqual(message["message"], "Missing credentials, check again")
         self.assertEqual(response.status_code, 400)
 
-    def test_signup_datatype(self):
-        '''test whether the correct datatype has been inserted'''
-        response = self.test_client.post("/api/v2/auth/attsignup",
-                                         data=json.dumps({
-                                            "name": 371979,
-                                            "email": 327487,
-                                            "password": 7293,
-                                            "role": 394923
-                                         }), headers={
-                                            'content-type': 'application/json',
-                                            'x-access-token': self.token_for_admin
-                                         })
-        message = json.loads(response.data)
-        self.assertEqual(message["message"], "7293 is not of type 'string'")
-        self.assertEqual(response.status_code, 400)
+
 
     def test_valid_email(self):
         '''test whether the email is valid'''

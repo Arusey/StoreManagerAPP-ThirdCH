@@ -3,32 +3,33 @@ from flask import jsonify
 import os
 from instance.config import Config
 
+from sys import modules
+
 
 class Db(object):
     def __init__(self):
-        self.dbName = Config.DB_NAME
-        self.dbHost = Config.DB_HOST
-        self.dbUser = Config.DB_USER
-        self.dbPassword = Config.DB_PASSWORD
         self.conn = None
 
 
     def create_connection(self):
         try:
-            if Config.APP_SETTINGS == "testing":
-                db = 'test_database'
-            if Config.APP_SETTINGS == 'development':
-                db = self.dbName
-            self.conn = psycopg2.connect(database=db)
-
-            return self.conn
+            if 'pytest' in modules:
+                URL = "test_database"
+            elif os.getenv("APP_SETTINGS") == "development":
+                URL = "storemanager"
+            self.conn = psycopg2.connect(database=URL)
+            
         except Exception as e:
             print(e)
-            return jsonify(
-                {
-                'error': 'connection failed'
-                }
-            )
+            self.conn = psycopg2.connect(os.environ['DB_URL'], sslmode = 'require')
+        self.conn.autocommit = True
+        return self.conn
+        
+
+    def close_connection(self):
+        '''this is a method that closes the database connections'''
+        return self.conn.close()
+
     def create_tables(self):
         cursor = self.create_connection().cursor()
         tables = [
@@ -52,7 +53,7 @@ class Db(object):
             """CREATE TABLE IF NOT EXISTS sales(
             id serial PRIMARY KEY ,
             userId int REFERENCES users(id) not null,
-            productid int REFERENCES products(id) ON DELETE RESTRICT
+            productid int REFERENCES products(id) ON DELETE CASCADE ON UPDATE CASCADE
 
 
             )""",
