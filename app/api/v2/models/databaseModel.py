@@ -12,6 +12,7 @@ class Db(object):
 
 
     def create_connection(self):
+        '''trying to create a connection to the database'''
         try:
             if 'pytest' in modules:
                 URL = "test_database"
