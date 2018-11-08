@@ -2,9 +2,11 @@ from flask import Flask, jsonify, request, make_response
 from flask_restful import Resource
 from functools import wraps
 from instance.config import Config
+from flask_expects_json import expects_json
 import jwt
 import datetime
 
+from .my_schema import *
 from .models.userModel import UserModel
 from .models.databaseModel import Db
 from .models.productsModel import ModelProduct
@@ -55,40 +57,19 @@ def token_required(func):
 
 
 
-class AdminSignup(Resource):
-    """docstring for AdminSignup."""
-    def post(self):
-        data = request.get_json()
-        AuthValidate.validate_missing_key_value(self
-        , data)
-        AuthValidate.validate_data(self, data)
-        AuthValidate.validate_invalid_entry(self,data)
-        AuthValidate.validate_empty_data(self, data)
-        AuthValidate.validate_details(self, data)
-        name = data["name"].lower()
-        email = data["email"].lower()
-        password = data["password"]
-        role = data["role"].lower()
-        user = UserModel(name, email, password, role)
-        user.saveAdmin()
-        message = make_response(jsonify({
-        "Message": "user successfully registered",
-        "name": name,
-        "email": email,
-        "role": role
-        }), 201)
-        return message
 class AttSignup(Resource):
     """docstring for attendant Signup."""
     @token_required
+    @expects_json(user_signup_json)
     def post(current_user, self):
+
         data = request.get_json()
+        valid = AuthValidate(data)
+        valid.validate_invalid_entry(data)
+        valid.validate_empty_data(data)
+        valid.validate_details(data)
         if current_user and current_user["role"] == "admin":
-            AuthValidate.validate_missing_key_value(self, data)
-            AuthValidate.validate_data(self, data)
-            AuthValidate.validate_invalid_entry(self,data)
-            AuthValidate.validate_empty_data(self, data)
-            AuthValidate.validate_details(self, data)
+
             name = data["name"].lower()
             email = data["email"].lower()
             password = data["password"]
@@ -108,12 +89,14 @@ class AttSignup(Resource):
         return message
 class AdminLogin(Resource):
     '''docstring for administrator login'''
+    @expects_json(user_login_json)
     def post(self):
         '''login as user and encode a jwt token'''
         data = request.get_json()
-        email = data["email"].lower()
-        password = data["password"].lower()
-        users = UserModel.get(self)
+        email = data["email"]
+        password = data["password"]
+        user_obj = UserModel()
+        users = user_obj.get()
         for user in users:
             if email == user["email"] and password == user['password']:
 
@@ -133,15 +116,22 @@ class AdminLogin(Resource):
             ), 403)
 class AttLogin(Resource):
     '''docstring for attendant login'''
+    @expects_json(user_login_json)
     def post(self):
         '''login as attendant and encode a jwt token'''
         data = request.get_json()
-        email = data["email"].lower()
-        password = data["password"].lower()
-        users = UserModel.get(self)
+        email = data["email"]
+        password = data["password"]
+        myuser = UserModel()
+        users = myuser.get()
         for user in users:
+            print(user)
+
+            print(user["email"])
+            print(email)
+            print(password, user["password"])
             if email == user["email"] and password == user["password"]:
-                print(user)
+                print(user, "idjscijk")
                 token = jwt.encode({
                 "email": email,
                 "password" : password,
@@ -149,12 +139,12 @@ class AttLogin(Resource):
                                                 (minutes=54567)
                 }, Config.SECRET_KEY, algorithm='HS256')
                 return make_response(jsonify({
-                            "Message": "attendant successfully logged in",
+                            "Message": "user successfully logged in",
 						     "token": token.decode("UTF-8")}), 200)
-            # return make_response(jsonify({
-            #     "Message": "Login failed, wrong entries"
-            # }
-            # ), 403)
+        return make_response(jsonify({
+            "Message": "Login failed, wrong entries"
+        }
+        ), 403)
 
 
 
@@ -164,6 +154,7 @@ class AttLogin(Resource):
 
 class Product(Resource):
     @token_required
+    @expects_json(products_json)
     def post(current_user, self):
         '''endpoint for posting a product'''
         if current_user and current_user["role"] != "admin":
@@ -175,9 +166,9 @@ class Product(Resource):
             return make_response(jsonify({
                 "Message": "Kindly ensure you have inserted your details"
             }), 400)
-        ProductValidate.validate_missing_key(self, data)
-        ProductValidate.validate_empty_products(self, data)
-        ProductValidate.validate_products_data(self, data)
+        pvalid = ProductValidate(data=data)
+        pvalid.validate_empty_products()
+        pvalid.validate_products_data()
 
 
         name = data["name"].lower()
@@ -241,7 +232,8 @@ class SingleProduct(Resource):
         '''deletes a selected product'''
         product = ModelProduct()
         products = product.get()
-        sales = ModelSales.get_all_sales(self)
+        mysales = ModelSales()
+        sales = mysales.get_all_sales()
         if current_user["role"] != "admin":
             return make_response(jsonify({
                 "Message": "You have no authorization to delete a product"
@@ -264,6 +256,7 @@ class SingleProduct(Resource):
         return message
 
     @token_required
+    @expects_json(update_json)
     def put(current_user, self, id):
         '''update details in product'''
         if current_user and current_user["role"] != "admin":
@@ -323,9 +316,8 @@ class Sale(Resource):
                 if product["id"] == id:
                     userid = current_user["id"]
                     mysale = ModelSales(userid, id)
-                    # currentstock = data["currentstock"]
                     if int(product["currentstock"]) > 0:
-                        product["currentstock"] = product["currentstock"] - 1
+                        product["currentstock"] = product["currentstock"] - data["currentstock"]
                     else:
                         return make_response(jsonify({
                             "Message": "sold out"
@@ -354,6 +346,9 @@ class Sale(Resource):
                             "sales": product,
                             "total": total
                         }), 201)
+            return make_response(jsonify({
+                "Message": "this product does not exist"
+            }), 404)
 
 
 

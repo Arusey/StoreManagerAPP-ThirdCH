@@ -1,40 +1,54 @@
 from .BaseTest import *
 
 class TestSales(TestAllEndpoints):
-    """test whether whther all sales are retrieved successfully"""
-    def test_sale_success(self):
-        response = self.test_client.post("/api/v2/sales",
-                                         data=self.sale,
+    def test_post_sale(self):
+        response = self.test_client.post("api/v2/sales",
+                                         data=json.dumps(
+                                             {
+                                                 "id": 1,
+                                                 "currentstock": 5
+                                             }
+                                         ),
                                          headers={
                                              'content-type': 'application/json',
                                              'x-access-token': self.token_for_attendant
                                          })
         message = json.loads(response.data)
         self.assertEqual(message["Message"], "product successfully sold")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201) 
 
-    def test_empty_sale_data(self):
-        """test whether empty data is inserted in sales endpoint"""
-        response = self.test_client.post("/api/v2/sales",
-                                         data=json.dumps({
-
-                                         }),
+    def test_no_product(self):
+        response = self.test_client.post("api/v2/sales",
+                                         data=json.dumps(
+                                             {
+                                                 "id": 1000,
+                                                 "currentstock": 3
+                                             }
+                                         ), 
                                          headers={
                                              'content-type': 'application/json',
                                              'x-access-token': self.token_for_attendant
                                          })
         message = json.loads(response.data)
-        self.assertEqual(message["Message"], "no data available")
-        self.assertEqual(response.status_code, 406)
+        print(response.data)
+        self.assertEqual(message["Message"], "this product does not exist")
+        self.assertEqual(response.status_code, 404)
 
-    def test_get_all_sales(self):
-        """test whether all sales have been retrieved"""
-        response = self.test_client.get("/api/v2/sales",
-                                         data=self.sale,
+    def test_minimumstock(self):
+        response = self.test_client.post("api/v2/sales",
+                                         data=json.dumps(
+                                             {
+                                                 "id": 1,
+                                                 "currentstock": 22
+                                             }
+                                         ), 
                                          headers={
                                              'content-type': 'application/json',
-                                             'x-access-token': self.token_for_admin
+                                             'x-access-token': self.token_for_attendant
                                          })
         message = json.loads(response.data)
-        self.assertEqual(message["Message"], "sale retrieval is successful")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(message["Message"], "Alert Minimum stock reached")
+        self.assertEqual(response.status_code, 201)
+        
+        
+                    
