@@ -69,8 +69,7 @@ class Db(object):
                 cursor.execute(table)
             cursor.execute(
                 """INSERT INTO users(name, email, password, role)
-                VALUES('tony','tony@email.com','kevin@123','admin') ON CONFLICT(email)
-                DO NOTHING;"""
+                VALUES('tony','tony@email.com','kevin@123','admin');"""
             )
         except Exception as e:
             print(e)
