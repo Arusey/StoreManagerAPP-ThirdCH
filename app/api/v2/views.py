@@ -291,6 +291,7 @@ class SingleProduct(Resource):
             "Message": "The product does not exist"
         }), 404)
 class Sale(Resource):
+    '''post a sale endpoint'''
     @token_required
     def post(current_user, self):
         total = 0
