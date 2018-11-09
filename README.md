@@ -1,7 +1,6 @@
 # StoreManagerAPP-ThirdCH
 [![Build Status](https://travis-ci.com/Arusey/StoreManagerAPP-ThirdCH.svg?branch=develop)](https://travis-ci.com/Arusey/StoreManagerAPP-ThirdCH)
-
-
+[![Coverage Status](https://coveralls.io/repos/github/Arusey/StoreManagerAPP-ThirdCH/badge.svg?branch=develop)](https://coveralls.io/github/Arusey/StoreManagerAPP-ThirdCH?branch=develop)
 [![Maintainability](https://api.codeclimate.com/v1/badges/b4e9e82c81b8959c52cc/maintainability)](https://codeclimate.com/github/Arusey/StoreManagerAPP-ThirdCH/maintainability)
 
 
