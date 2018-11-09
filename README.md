@@ -11,12 +11,15 @@ This is a store manager application that allows the stakeholders of a given stor
 * Sign up to the application
 * Login to the application
 * Post a product
+* Delete a product
+* Update a product
 * Post a Sale
 * Get all products
 * Get single product
 * Get all products
 * Get all sales
 * Get single sale
+* Logout of the application
 
 Installation
 ============
@@ -30,10 +33,11 @@ Take the following steps:
 
 Documentation
 =============
+https://documenter.getpostman.com/view/4790487/RzZ4q21V
 
 Heroku Deploy
 =============
-
+https://lagatstores.herokuapp.com
 
 Running Tests
 =============
