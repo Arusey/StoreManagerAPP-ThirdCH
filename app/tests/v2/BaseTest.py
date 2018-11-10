@@ -75,10 +75,10 @@ class TestAllEndpoints(unittest.TestCase):
             "minimumstock": 0,
             "price": 200
         })
-        # self.sale = json.dumps ({
-        #     "id": 1,
-        #     "currentstock": 5
-        # })
+        self.sale = json.dumps ({
+            "id": 1,
+            "currentstock": 5
+        })
         self.test_client.post("/api/v2/products", data=self.product,
                                 headers={
                                     'content-type': 'application/json',

@@ -5,7 +5,7 @@ class TestSales(TestAllEndpoints):
         response = self.test_client.post("api/v2/sales",
                                          data=json.dumps(
                                              {
-                                                 "id": 1,
+                                                 "id": 3,
                                                  "currentstock": 5
                                              }
                                          ),
@@ -15,16 +15,16 @@ class TestSales(TestAllEndpoints):
                                          })
         message = json.loads(response.data)
         self.assertEqual(message["Message"], "product successfully sold")
-        self.assertEqual(response.status_code, 201) 
+        self.assertEqual(response.status_code, 201)
 
     def test_no_product(self):
         response = self.test_client.post("api/v2/sales",
                                          data=json.dumps(
                                              {
-                                                 "id": 1000,
+                                                 "id": 2000,
                                                  "currentstock": 3
                                              }
-                                         ), 
+                                         ),
                                          headers={
                                              'content-type': 'application/json',
                                              'x-access-token': self.token_for_attendant
@@ -41,7 +41,7 @@ class TestSales(TestAllEndpoints):
                                                  "id": 1,
                                                  "currentstock": 22
                                              }
-                                         ), 
+                                         ),
                                          headers={
                                              'content-type': 'application/json',
                                              'x-access-token': self.token_for_attendant
@@ -49,6 +49,21 @@ class TestSales(TestAllEndpoints):
         message = json.loads(response.data)
         self.assertEqual(message["Message"], "Alert Minimum stock reached")
         self.assertEqual(response.status_code, 201)
-        
-        
-                    
+
+
+    # def test_get_all_sales(self):
+    #     response = self.test_client.get("api/v2/sales",
+    #                                      data=json.dumps(
+    #                                          {
+    #                                              "id": 1,
+    #                                              "currentstock": 22
+
+    #                                          }
+    #                                      ),
+    #                                      headers={
+    #                                          'content-type': 'application/json',
+    #                                          'x-access-token': self.token_for_admin
+    #                                      })
+    #     message = json.loads(response.data)
+    #     self.assertEqual(message["Message"], "sale retrieval is successful")
+    #     self.assertEqual(response.status_code, 200)

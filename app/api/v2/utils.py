@@ -53,8 +53,8 @@ class AuthValidate(object):
     #         abort(400, Response)
     def validate_details(self, data):
         valid_mail = validate_email(data["email"])
-        userq = UserModel()
-        users = userq.get()
+        user = UserModel()
+        users = user.getusers()
         for user in users:
             if data["email"] == user["email"]:
                 Response = "User already exists"
