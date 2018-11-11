@@ -19,13 +19,13 @@ class Db(object):
             elif os.getenv("APP_SETTINGS") == "development":
                 URL = "storemanager"
             self.conn = psycopg2.connect(database=URL)
-            
+
         except Exception as e:
             print(e)
-            self.conn = psycopg2.connect(os.environ['DB_URL'], sslmode = 'require')
+            self.conn = psycopg2.connect(os.environ['DATABASE_URL'], sslmode = 'require')
         self.conn.autocommit = True
         return self.conn
-        
+
 
     def close_connection(self):
         '''this is a method that closes the database connections'''

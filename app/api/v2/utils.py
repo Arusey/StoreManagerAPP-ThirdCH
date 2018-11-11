@@ -5,6 +5,7 @@ import re
 from .models.userModel import UserModel
 from .models.productsModel import ModelProduct
 
+
 class AuthValidate(object):
     def __init__(self, data):
         self.data = data
@@ -29,6 +30,10 @@ class AuthValidate(object):
         if data["name"] =="" or data["email"] =="" or data["password"] =="" or data["role"] =="":
             Response ="Missing credentials, check again"
             abort(400, Response)
+    # def validate_data(self, data):
+    #     if type(data["name"]) is not str or type(data["email"]) is not str or type(data["password"]) is not str or type(data["role"]) is not str:
+    #         Response = "You cannot insert an integer"
+    #         abort(400, Response)
     def validate_details(self, data):
         valid_mail = validate_email(data["email"])
         user = UserModel()
@@ -41,6 +46,9 @@ class AuthValidate(object):
         if not valid_mail:
             Response = "The email is not valid"
             abort(400, Response)
+        # if not re.match(r"(^[a-zA-Z0-9_.]+@[a-zA-Z0-9-]+\.[a-z]+$)", self.data["email"]):
+        #     Response = "Email must have a fullstop"
+        #     abort(400, Response)
         elif len(data["password"]) < 6 or len(data["password"]) > 12:
             Response = "Password must be long than 6 characters or less than 12"
             abort(400, Response)
@@ -56,6 +64,32 @@ class AuthValidate(object):
         elif not re.search("^.*(?=.*[@#$%^&+=]).*$", data["password"]):
             Response = "Password must have a special charater"
             abort(400, Response)
+
+
+
+    # def validate_datatypes(self, data):
+    #     if type(self.data["name"]) is not str:
+    #         Response = "Only string characters allowed for name"
+    #         abort(400, Response)
+    #     if type(self.data["email"]) is not str:
+    #         Response = "Only string characters are allowed for email"
+    #         abort(400, Response)
+    #     if type(self.data["password"]) is not str:
+    #         Response = "Only string characters are allowed for password"
+    #         abort(400, Response)
+    #     if type(self.data["role"]) is not str:
+    #         Response = "Only string characters are allowed for role"
+    #         abort(400, Response)
+
+    # def validate_missing_key(self, data):
+    #     '''Checks for missing data keys in data passed during product registration'''
+    #     if "name" not in data or "category" not in data or "description" not in data or "currentstock" not in data or "minimumstock" not in data or "price" not in data:
+    #         Response = "Must enter all product details"
+    #         abort(400, Response)
+
+
+
+
 
 
 
@@ -80,7 +114,9 @@ class ProductValidate(object):
             if self.data["name"] == product["name"]:
                 Response = "Product already registered"
                 abort(406, Response)
-
+        if " " in self.data["name"] or " " in self.data["category"]:
+            Response = "Ensure no spaces when entering detail"
+            abort(400, Response)
 
 
 
