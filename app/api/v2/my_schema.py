@@ -4,11 +4,11 @@ products_json = {
     'maxProperties': 6,
     'properties': {
         'name': {'type': 'string'},
-        'currentstock': {'type': 'integer'},
+        'currentstock': {'type': 'string'},
         'description': {'type': 'string'},
         'category': {'type': 'string'},
-        'price': {'type': 'number'},
-        'minimumstock': {'type': 'integer'},
+        'price': {'type': 'string'},
+        'minimumstock': {'type': 'string'},
     },
     'required': ['name', 'price', 'description',
                  'category', 'currentstock', 'minimumstock']
