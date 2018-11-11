@@ -62,9 +62,9 @@ class TestAllEndpoints(unittest.TestCase):
                 "name": "chai",
                 "category": "food",
                 "description": "Great food",
-                "currentstock": 20,
-                "minimumstock": 2,
-                "price": 200
+                "currentstock": "20",
+                "minimumstock": "2",
+                "price": "200"
             }
         )
         self.soldout = json.dumps({
