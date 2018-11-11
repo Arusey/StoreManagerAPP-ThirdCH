@@ -29,7 +29,7 @@ class UserModel(Db):
         self.conn.commit()
         self.conn.close()
 
-    def get(self):
+    def getusers(self):
         db = Db()
         self.conn = db.create_connection()
         db.create_tables()
