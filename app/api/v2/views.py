@@ -41,7 +41,7 @@ def token_required(func):
                token, Config.SECRET_KEY, algorithms=['HS256'])
             print(data)
             newuser = UserModel()
-            users = newuser.get()
+            users = newuser.getusers()
             for user in users:
 
                 if user['email'] == data['email']:
@@ -87,6 +87,22 @@ class AttSignup(Resource):
             "message": "please login as administrator"
         }), 401)
         return message
+    @token_required
+    def get(current_user, self):
+        '''docstring for getting all users'''
+        if current_user and current_user["role"] == "admin":
+            user = UserModel()
+            users = user.getusers()
+            return make_response(jsonify({
+                "Message": "all users retrieved successfully",
+                "users": users
+            }
+            ), 200)
+        return make_response(jsonify({
+            "Message": "Please login first"
+        }), 401)
+
+
 class AdminLogin(Resource):
     '''docstring for administrator login'''
     @expects_json(user_login_json)
@@ -96,7 +112,7 @@ class AdminLogin(Resource):
         email = data["email"]
         password = data["password"]
         user_obj = UserModel()
-        users = user_obj.get()
+        users = user_obj.getusers()
         for user in users:
             if email == user["email"] and password == user['password']:
 
@@ -123,7 +139,7 @@ class AttLogin(Resource):
         email = data["email"]
         password = data["password"]
         myuser = UserModel()
-        users = myuser.get()
+        users = myuser.getusers()
         for user in users:
             print(user)
 
@@ -174,9 +190,9 @@ class Product(Resource):
         name = data["name"].lower()
         category = data["category"].lower()
         description = data["description"].lower()
-        currentstock = data["currentstock"]
-        minimumstock = data["minimumstock"]
-        price = data["price"]
+        currentstock = int(data["currentstock"])
+        minimumstock = int(data["minimumstock"])
+        price = int(data["price"])
 
         product = ModelProduct(data)
         product.add_product()
@@ -291,7 +307,6 @@ class SingleProduct(Resource):
             "Message": "The product does not exist"
         }), 404)
 class Sale(Resource):
-    '''this endpoint allows attendant to post a sale'''
     @token_required
     def post(current_user, self):
         total = 0

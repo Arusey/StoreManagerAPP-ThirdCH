@@ -7,15 +7,16 @@ class TestProducts(TestAllEndpoints):
                                             "name": "coffee",
                                             "category": "junk",
                                             "description": "super delicious",
-                                            "currentstock": 23,
-                                            "minimumstock": 2,
-                                            "price": 200
+                                            "currentstock": "23",
+                                            "minimumstock": "2",
+                                            "price": "200"
                                          }),
                                          headers={
                                             'content-type': 'application/json',
                                             'x-access-token': self.token_for_admin
                                          })
         message = json.loads(response.data)
+        print(response.data)
         self.assertEqual(message["Message"], "Product posted successfully")
         self.assertEqual(response.status_code, 201)
     def test_get_all_products(self):
@@ -40,6 +41,23 @@ class TestProducts(TestAllEndpoints):
         message = json.loads(response.data)
         self.assertEqual(message["Message"], "Product retrieval successful")
         self.assertEqual(response.status_code, 200)
+    def test_update_product(self):
+        response = self.test_client.put("/api/v2/products/1",
+                                         data=json.dumps(
+                                            {
+                                               "name": "burger",
+                                               "currentstock": 23,
+                                               "price": 200
+                                            }
+                                         ),
+                                         headers={
+                                            'content-type': 'application/json',
+                                            'x-access-token': self.token_for_admin
+                                         })
+        message = json.loads(response.data)
+        print(response.data)
+        self.assertEqual(message["Message"], "product has been updated successfully")
+        self.assertEqual(response.status_code, 200)
     def test_delete_product(self):
         response = self.test_client.delete("/api/v2/products/1",
                                          data=self.product,
@@ -63,24 +81,8 @@ class TestProducts(TestAllEndpoints):
         self.assertEqual(message["Message"], "The product selected for deletion does not exist")
         self.assertEqual(response.status_code, 200)
 
-    def test_update_product(self):
-        response = self.test_client.put("/api/v2/products/1",
-                                         data=json.dumps(
-                                            {
-                                               "name": "burger",
-                                               "currentstock": 23,
-                                               "price": 200
-                                            }
-                                         ),
-                                         headers={
-                                            'content-type': 'application/json',
-                                            'x-access-token': self.token_for_admin
-                                         })
-        message = json.loads(response.data)
-        print(response.data)
-        self.assertEqual(message["Message"], "product has been updated successfully")
-        self.assertEqual(response.status_code, 200)
-    
+
+
     def test_product_registered(self):
         response = self.test_client.post("/api/v2/products",
                                          data=self.product,
@@ -91,21 +93,3 @@ class TestProducts(TestAllEndpoints):
         message = json.loads(response.data)
         self.assertEqual(message["message"], "Product already registered")
         self.assertEqual(response.status_code, 406)
-
-    def test_space_in_data(self):
-        response  = self.test_client.post("/api/v2/products",
-                                         data=json.dumps({
-                                             "name": "njugu ",
-                                            "category": "junk ",
-                                            "description": "super delicious",
-                                            "currentstock": 23,
-                                            "minimumstock": 2,
-                                            "price": 200
-                                         }),
-                                         headers={
-                                             'content-type': 'application/json',
-                                             'x-access-token': self.token_for_admin
-                                         })
-        message = json.loads(response.data)
-        self.assertEqual(message["message"], "Ensure no spaces when entering detail")
-        self.assertEqual(response.status_code, 400)

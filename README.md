@@ -1,8 +1,9 @@
 # StoreManagerAPP-ThirdCH
+[![Build Status](https://travis-ci.com/Arusey/StoreManagerAPP-ThirdCH.svg?branch=develop)](https://travis-ci.com/Arusey/StoreManagerAPP-ThirdCH)
+[![Coverage Status](https://coveralls.io/repos/github/Arusey/StoreManagerAPP-ThirdCH/badge.svg?branch=develop)](https://coveralls.io/github/Arusey/StoreManagerAPP-ThirdCH?branch=develop)
 [![Maintainability](https://api.codeclimate.com/v1/badges/b4e9e82c81b8959c52cc/maintainability)](https://codeclimate.com/github/Arusey/StoreManagerAPP-ThirdCH/maintainability)
 
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/b4e9e82c81b8959c52cc/maintainability)](https://codeclimate.com/github/Arusey/StoreManagerAPP-ThirdCH/maintainability)
 This is application for managing sales in a given store
 App Description
 ===============
@@ -10,12 +11,15 @@ This is a store manager application that allows the stakeholders of a given stor
 * Sign up to the application
 * Login to the application
 * Post a product
+* Delete a product
+* Update a product
 * Post a Sale
 * Get all products
 * Get single product
 * Get all products
 * Get all sales
 * Get single sale
+* Logout of the application
 
 Installation
 ============
@@ -29,10 +33,11 @@ Take the following steps:
 
 Documentation
 =============
+https://documenter.getpostman.com/view/4790487/RzZ4q21V
 
 Heroku Deploy
 =============
-
+https://lagatstores.herokuapp.com
 
 Running Tests
 =============
@@ -46,7 +51,7 @@ The following endpoints should be working:
 
 |Endpoint|functionality|contraints(requirements)|
 |-------|-------------|----------|
-|post /api/v2/auth/signup|create a user|user information|
+|post /api/v2/auth/attsignup|create a user|user information|
 |post /api/v2/auth/login | login |requires authentication |
 |get /api/v2/products| get all the products| pass a token |
 |get /api/v2/products/<int:id>|return a single product| product id, pass token|
