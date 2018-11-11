@@ -5,6 +5,6 @@ app = create_app("development")
 # db_obj.create_tables()
 @app.route("/")
 def index():
-    return "<h1>find the app documentation</h1><a href="https://documenter.getpostman.com/view/4790487/RzZ4q21V">here</a></p>"
+    return "<h1>find the app documentation</h1><a href='https://documenter.getpostman.com/view/4790487/RzZ4q21V'>here</a></p>"
 if __name__ ==  '__main__':
     app.run()
