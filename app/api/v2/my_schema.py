@@ -40,8 +40,8 @@ sales_json = {
     'type': 'object',
     'maxProperties': 2,
     'properties': {
-        'id': {'type': 'integer'},
-        'currentstock': {'type': 'integer'}
+        'id': {'type': 'string'},
+        'currentstock': {'type': 'string'}
     },
     'required': ['id', 'currentstock']
 

@@ -34,7 +34,7 @@ class ModelSales(Db):
         db.create_tables()
         cursor = self.conn.cursor()
 
-        cursor.execute("SELECT products.id, products.name, products.category, products.description, products.price, sales.id, users.id, users.name FROM products JOIN sales ON products.id=sales.productid JOIN users ON users.id=sales.userid")
+        cursor.execute("SELECT products.id, products.name, products.category, products.description, products.price, sales.id, users.id, users.name, products.currentstock FROM products JOIN sales ON products.id=sales.productid JOIN users ON users.id=sales.userid")
         result = cursor.fetchall()
         sales = []
         for single_item in result:
@@ -47,6 +47,7 @@ class ModelSales(Db):
             sale['saleid'] = single_item[5]
             sale['attendantid'] = single_item[6]
             sale['attendantname'] = single_item[7]
+            sale['quantity'] = single_item[8]
             sales.append(sale)
 
 

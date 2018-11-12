@@ -90,7 +90,7 @@ class AttSignup(Resource):
     @token_required
     def get(current_user, self):
         '''docstring for getting all users'''
-        if current_user and current_user["role"] == "admin":
+        if current_user:
             user = UserModel()
             users = user.getusers()
             return make_response(jsonify({
@@ -311,67 +311,73 @@ class Sale(Resource):
     def post(current_user, self):
         total = 0
         data = request.get_json()
+        print(data)
         if not data or not data["id"]:
             return make_response(jsonify({
 
                 "Message": "no data available"
             }), 406)
 
-        id = data["id"]
-        if current_user and current_user['role'] == 'attendant':
-            self.myproduct = ModelProduct.get(self)
-            if len(self.myproduct) == 0:
+        id = int(data["id"])
+        print(id)
+        self.myproduct = ModelProduct.get(self)
+        if len(self.myproduct) == 0:
 
-                return make_response(jsonify({
-                    "Message": "No products available for sale"
-                }), 404)
-
-            for product in self.myproduct:
-                print(product)
-                print(id)
-                if product["id"] == id:
-                    userid = current_user["id"]
-                    mysale = ModelSales(userid, id)
-                    if int(product["currentstock"]) > 0:
-                        product["currentstock"] = product["currentstock"] - data["currentstock"]
-                    else:
-                        return make_response(jsonify({
-                            "Message": "sold out"
-                        }), 404)
-
-
-                    mysale.save(userid, id)
-
-                    productID = id
-                    update_product = ModelProduct(product)
-                    update_product.update(productID)
-                    new_sale = ModelSales.get_all_sales(self)
-                    for sale in new_sale:
-                        if product["id"] == new_sale:
-                            price = int(product["price"]) * data["currentstock"]
-                            total = total + price
-                    if product["currentstock"] < int(product["minimumstock"]):
-                        return make_response(jsonify({
-                            "Message": "Alert Minimum stock reached",
-                            "sales": product,
-                            "total": total
-                        }), 201)
-                    else:
-                        return make_response(jsonify({
-                            "Message": "product successfully sold",
-                            "sales": product,
-                            "total": total
-                        }), 201)
             return make_response(jsonify({
-                "Message": "this product does not exist"
+                "Message": "No products available for sale"
             }), 404)
+        if current_user and current_user['role'] == 'admin':
+            return make_response(jsonify({
+
+                "Message": "You must be an attendant"
+            }), 406)
+
+        for product in self.myproduct:
+            print(product)
+            if product["id"] == id:
+                userid = int(current_user["id"])
+                mysale = ModelSales(userid, id)
+                if int(product["currentstock"]) > 0:
+                    product["currentstock"] = product["currentstock"] - int(data["currentstock"])
+                else:
+                    return make_response(jsonify({
+                        "Message": "sold out"
+                    }), 404)
+
+
+                mysale.save(userid, id)
+
+                productID = id
+                update_product = ModelProduct(product)
+                update_product.update(productID)
+                new_sale = ModelSales.get_all_sales(self)
+
+                if product["currentstock"] < int(product["minimumstock"]):
+                    return make_response(jsonify({
+                        "Message": "Alert Minimum stock reached",
+                        "sales": product,
+                        "total": total
+                    }), 201)
+                else:
+                    return make_response(jsonify({
+                        "Message": "product successfully sold",
+                        "sales": product,
+                        "total": total
+                    }), 201)
+                for sale in new_sale:
+                    if product["id"] == new_sale:
+                        price = int(product["price"]) * data["currentstock"]
+                        total = total + price
+        return make_response(jsonify({
+            "Message": "this product does not exist"
+        }), 404)
 
 
 
     @token_required
     def get(current_user, self):
         '''getting all sales made'''
-        if current_user and current_user["role"] == "admin":
+        if current_user:
             saleitem = ModelSales()
             sales = saleitem.get_all_sales()
 
